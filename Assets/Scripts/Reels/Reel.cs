@@ -7,7 +7,9 @@ public class Reel : MonoBehaviour
     // ---------------- Serialized Fields ----------------
     [SerializeField]
     private RectTransform[] symbols;
-    public Sprite[] symbolSprites;
+
+    [SerializeField]
+    private Sprite[] symbolSprites;
 
     [SerializeField]
     private float symbolHeight = 100f;
@@ -19,6 +21,7 @@ public class Reel : MonoBehaviour
     private int symbolsBeforeWrap = 3;
 
     // ---------------- Private Fields ----------------
+    private const int VisibleSymbolsOffset = 1;
     private bool isStopped = false;
     private float bounceDistance = 20f;
     private float bounceDuration = 0.1f;
@@ -63,7 +66,7 @@ public class Reel : MonoBehaviour
         isStopped = true;
 
         ApplyResult(result);
-        StartCoroutine(StopCoroutine());
+        StartCoroutine(StopBounce());
     }
 
     // ---------------- MoveSymbols Method ----------------
@@ -124,7 +127,7 @@ public class Reel : MonoBehaviour
     }
 
     // ---------------- ApplyResult Method ----------------
-    // Aplica el resultado a los símbolos.
+    // Aplica el resultado a los símbolos visibles (índices 1-3 del array).
     void ApplyResult(int[] result)
     {
         if (result == null || result.Length == 0)
@@ -132,7 +135,7 @@ public class Reel : MonoBehaviour
 
         for (int i = 0; i < result.Length; i++)
         {
-            SetSymbolOrRandom(symbols[i + 1], result[i]);
+            SetSymbolOrRandom(symbols[i + VisibleSymbolsOffset], result[i]);
         }
     }
 
@@ -194,9 +197,9 @@ public class Reel : MonoBehaviour
         }
     }
 
-    // ---------------- StopCoroutine Coroutine ----------------
+    // ---------------- StopBounce Coroutine ----------------
     // Mueve los símbolos hacia abajo y hacia arriba con un efecto de rebote.
-    IEnumerator StopCoroutine()
+    IEnumerator StopBounce()
     {
         float elapsed = 0;
 

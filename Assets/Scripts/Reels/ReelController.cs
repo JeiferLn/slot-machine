@@ -241,7 +241,7 @@ public class ReelController : MonoBehaviour
     // ---------------- Force Stop Method ----------------
     public void ForceStop(int[][] board, int[][][] streaks)
     {
-        if (!HasValidReels())
+        if (!HasValidReels() || board == null || board.Length != reels.Length)
             return;
 
         resultBoard = board;
