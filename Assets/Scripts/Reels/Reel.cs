@@ -22,6 +22,7 @@ public class Reel : MonoBehaviour
 
     // ---------------- Private Fields ----------------
     private const int VisibleSymbolsOffset = 1;
+    private const int VisibleSymbolsCount = 3;
     private bool isStopped = false;
     private float bounceDistance = 20f;
     private float bounceDuration = 0.1f;
@@ -150,15 +151,10 @@ public class Reel : MonoBehaviour
         if (img == null)
             return;
 
-        if (index == -1)
-        {
-            int randomIndex = Random.Range(0, symbolSprites.Length);
-            img.sprite = symbolSprites[randomIndex];
-        }
-        else
-        {
-            img.sprite = symbolSprites[index];
-        }
+        img.sprite =
+            index == -1
+                ? symbolSprites[Random.Range(0, symbolSprites.Length)]
+                : symbolSprites[index];
     }
 
     // ---------------------------------------
@@ -267,10 +263,9 @@ public class Reel : MonoBehaviour
 
             Color target;
 
-            if (i >= 1 && i <= 3)
+            if (i >= VisibleSymbolsOffset && i < VisibleSymbolsOffset + VisibleSymbolsCount)
             {
-                int visibleIndex = i - 1;
-
+                int visibleIndex = i - VisibleSymbolsOffset;
                 target = mask[visibleIndex] != 0 ? Color.white : new Color(0.5f, 0.5f, 0.5f, 1f);
             }
             else
@@ -294,7 +289,7 @@ public class Reel : MonoBehaviour
     }
 
     // ---------------- FadeToColor Coroutine ----------------
-    public IEnumerator FadeToColor(Image img, Color target, float duration)
+    IEnumerator FadeToColor(Image img, Color target, float duration)
     {
         Color start = img.color;
         float time = 0f;

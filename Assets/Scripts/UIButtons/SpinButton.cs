@@ -36,10 +36,9 @@ public class SpinButton : MonoBehaviour
         if (reelController == null || reelController.IsBusy())
             return;
 
-        if (
-            reelController.GetReelState() == ReelState.SPINNING
-            || reelController.GetReelState() == ReelState.STOPPING
-        )
+        ReelState state = reelController.GetReelState();
+
+        if (state == ReelState.SPINNING || state == ReelState.STOPPING)
         {
             if (stopCoroutine != null)
                 StopCoroutine(stopCoroutine);
@@ -49,15 +48,15 @@ public class SpinButton : MonoBehaviour
             return;
         }
 
-        if (reelController.GetReelState() == ReelState.STOPPED)
+        if (state == ReelState.STOPPED)
         {
             reelController.SetReelState(ReelState.SPINNING);
-            stopCoroutine = StartCoroutine(StopCoroutines());
+            stopCoroutine = StartCoroutine(DelayedStop());
         }
     }
 
-    // ---------------- StopCoroutines Method ----------------
-    private IEnumerator StopCoroutines()
+    // ---------------- DelayedStop Method ----------------
+    private IEnumerator DelayedStop()
     {
         yield return new WaitForSeconds(3);
         reelController.Stop(GetTestBoard(), GetTestStreaks());

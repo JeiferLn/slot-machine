@@ -75,15 +75,11 @@ public class ReelController : MonoBehaviour
     // ---------------- Update Method ----------------
     void Update()
     {
-        if (
-            currentState == ReelState.SPINNING
-            || currentState == ReelState.STOPPING
-            || currentState == ReelState.FORCE_STOPPING
-        )
+        if (currentState == ReelState.SPINNING || currentState == ReelState.STOPPING)
         {
             UpdateSpinning();
 
-            if (currentState == ReelState.STOPPING || currentState == ReelState.FORCE_STOPPING)
+            if (currentState == ReelState.STOPPING)
                 UpdateStop();
         }
     }
@@ -244,11 +240,9 @@ public class ReelController : MonoBehaviour
         if (!HasValidReels() || board == null || board.Length != reels.Length)
             return;
 
-        resultBoard = board;
-
         for (int i = 0; i < reels.Length; i++)
         {
-            reels[i].Stop(resultBoard[i]);
+            reels[i].Stop(board[i]);
         }
 
         currentState = ReelState.STOPPED;
