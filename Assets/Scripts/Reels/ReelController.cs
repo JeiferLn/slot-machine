@@ -210,7 +210,7 @@ public class ReelController : MonoBehaviour
             reels[i].Highlight(streak[i]);
         }
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
 
         ResetVisuals();
 

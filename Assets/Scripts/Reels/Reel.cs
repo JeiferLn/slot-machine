@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +28,7 @@ public class Reel : MonoBehaviour
     private bool isStopped = false;
     private float bounceDistance = 20f;
     private float bounceDuration = 0.1f;
+    private Dictionary<Image, Tween> activeTweens = new Dictionary<Image, Tween>();
 
     // ---------------- Awake Method ----------------
     // Inicializa los símbolos con sprites aleatorios al cargar.
@@ -266,7 +269,18 @@ public class Reel : MonoBehaviour
             if (i >= VisibleSymbolsOffset && i < VisibleSymbolsOffset + VisibleSymbolsCount)
             {
                 int visibleIndex = i - VisibleSymbolsOffset;
-                target = mask[visibleIndex] != 0 ? Color.white : new Color(0.5f, 0.5f, 0.5f, 1f);
+                bool isWinner = mask[visibleIndex] != 0;
+
+                target = isWinner ? Color.white : new Color(0.5f, 0.5f, 0.5f, 1f);
+
+                if (isWinner)
+                {
+                    PlayWinAnimation(img);
+                }
+                else
+                {
+                    StopWinAnimation(img);
+                }
             }
             else
             {
@@ -277,18 +291,74 @@ public class Reel : MonoBehaviour
         }
     }
 
+    // ---------------- PlayWinAnimation Method ----------------
+    // Reproduce el efecto de animación de ganancia del símbolo.
+    void PlayWinAnimation(Image img)
+    {
+        if (img == null)
+            return;
+
+        if (activeTweens.ContainsKey(img))
+        {
+            activeTweens[img].Kill();
+            activeTweens.Remove(img);
+        }
+
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(img.transform.DOScale(1.15f, 0.3f).SetEase(Ease.OutQuad));
+        seq.Append(img.transform.DOScale(1f, 0.3f).SetEase(Ease.InOutQuad));
+        seq.SetLoops(-1);
+
+        seq.Join(
+            img.transform.DORotate(new Vector3(0, 0, 5f), 0.2f)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
+        );
+
+        activeTweens.Add(img, seq);
+    }
+
     // ---------------- ResetHighlight Method ----------------
+    // Resetea el color de los símbolos.
     public void ResetHighlight()
     {
         foreach (var symbol in symbols)
         {
             Image img = symbol.GetComponent<Image>();
             if (img != null)
+            {
+                StopWinAnimation(img);
                 img.color = Color.white;
+            }
         }
     }
 
+    // ---------------- StopWinAnimation Method ----------------
+    // Detiene el efecto de animación de ganancia del símbolo.
+    void StopWinAnimation(Image img)
+    {
+        if (img == null)
+            return;
+
+        if (activeTweens.ContainsKey(img))
+        {
+            activeTweens[img].Kill();
+            activeTweens.Remove(img);
+        }
+
+        img.transform.DOKill();
+
+        img.transform.localScale = Vector3.one;
+        img.transform.localRotation = Quaternion.identity;
+    }
+
+    // --------------------------------------------
+    // ---------------- COROUTINES ----------------
+    // --------------------------------------------
+
     // ---------------- FadeToColor Coroutine ----------------
+    // Fadea el color del símbolo a un color objetivo.
     IEnumerator FadeToColor(Image img, Color target, float duration)
     {
         Color start = img.color;
