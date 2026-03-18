@@ -3941,6 +3941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afb54250f580541278b6fe54759399ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReelController
+  boardImage: {fileID: 99682876}
   reels:
   - {fileID: 740866783}
   - {fileID: 1166114168}
